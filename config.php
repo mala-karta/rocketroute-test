@@ -12,27 +12,41 @@ define('APP_MODE', DEVELOPER_MODE);
 class Config
 {
     /** @var string  */
-    protected $rocketLogin = '';
+    protected $_rocketLogin = '';
 
     /** @var string  */
-    protected $rocketPassword = '';
+    protected $_rocketPassword = '';
 
     /** @var string  */
-    protected $rocketAppMd5 = '';
+    protected $_rocketAppMd5 = '';
 
     /** @var string  */
-    protected $rocketAccessKeyUrl = '';
+    protected $_rocketAccessKeyUrl = '';
 
     /** @var null|string  */
-    protected $rocketAppKey = null;
+    protected $_rocketAppKey = null;
     /** @var null|DateTime */
-    protected $rocketAppKeyExpDate = null;
+    protected $_rocketAppKeyExpDate = null;
+
+    /** @var string  */
+    protected $_googleApiKey = '';
+
+    /**
+     * @return string
+     */
+    public function getGoogleApiKey()
+    {
+        return $this->_googleApiKey;
+    }
 
     const DEVELOPER_MODE_CNF_FILE = '.cnf-dev';
     const PRODUCTION_MODE_CNF_FILE = '.cnf-prod';
 
     /** @var array - fields that MUST be read from config file */
-    protected $_requiredCnfFields = ['rocketLogin', 'rocketPassword', 'rocketAppMd5', 'rocketAccessKeyUrl'];
+    protected $_requiredCnfFields = [
+        'rocketLogin', 'rocketPassword', 'rocketAppMd5', 'rocketAccessKeyUrl',
+        'googleApiKey'
+    ];
 
     /**
      * Config constructor. Init data from config file
@@ -71,7 +85,8 @@ class Config
             if (empty($data[$fieldName])) {
                 throw new Exception($fieldName . ' is not found in the config file ' . $fileName);
             }
-            $this->$fieldName = $data[$fieldName];
+            $classFieldName = '_' . $fieldName;
+            $this->$classFieldName = $data[$fieldName];
         }
 
         return $this;
@@ -82,7 +97,7 @@ class Config
      */
     public function getRocketLogin()
     {
-        return $this->rocketLogin;
+        return $this->_rocketLogin;
     }
 
     /**
@@ -90,7 +105,7 @@ class Config
      */
     public function getRocketPassword()
     {
-        return $this->rocketPassword;
+        return $this->_rocketPassword;
     }
 
     /**
@@ -98,7 +113,7 @@ class Config
      */
     public function getRocketAppMd5()
     {
-        return $this->rocketAppMd5;
+        return $this->_rocketAppMd5;
     }
 
     /**
@@ -106,7 +121,7 @@ class Config
      */
     public function getRocketAccessKeyUrl()
     {
-        return $this->rocketAccessKeyUrl;
+        return $this->_rocketAccessKeyUrl;
     }
 
 

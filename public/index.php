@@ -3,14 +3,21 @@
  * User: irene
  * Date: 08.08.2018
  */
-
-require __DIR__ . '/system.php';
-require __DIR__ . '/../config.php';
-require __DIR__ . '/../vendor/autoload.php';
+define ('BASE_PATH', __DIR__ . '/..');
+define ('WWW_PATH', __DIR__ );
 
 
-$connector = new \RRTest\RRConnector();
+require WWW_PATH . '/system.php';
+require BASE_PATH . '/config.php';
+require BASE_PATH . '/vendor/autoload.php';
 
+
+$loader = new Twig_Loader_Filesystem(BASE_PATH . '/templates');
+$twig = new Twig_Environment($loader);
+
+echo $twig->render('index.html', array('googleApiKey' => $Config->getGoogleApiKey()));
+
+die();
 $client = new \GuzzleHttp\Client();
 
 $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><AUTH></AUTH>');
