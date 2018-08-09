@@ -10,6 +10,8 @@ use Exception;
 
 class RRConnector
 {
+    //https://apidev.rocketroute.com/wx/v1/service.wsdl
+
     /**
      * RRConnector constructor.
      */

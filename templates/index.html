@@ -1,34 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        #map {
-            width: 100%;
-            height: 400px;
-            background-color: grey;
-        }
-    </style>
+    <title>Iryna Popovych - Test task for Rocket Route</title>
+    <link rel="stylesheet" type="text/css" href="{{BASE_URL}}/css/main.css">
 </head>
 <body>
-<h3>This is test task for Rocket Route.</h3>
-<!--The div element for the map -->
-<div id="map"></div>
+<h2>This is test task for Rocket Route.</h2>
+{% include 'icao.html' %}
+<br>
+{% include 'maps.html' %}
+<br>
+{% include 'description.html' %}
 
-<script>
-    // Initialize and add the map
-    function initMap() {
-        // The location of Uluru
-        var uluru = {lat: -25.344, lng: 131.036};
-        // The map, centered at Uluru
-        var map = new google.maps.Map(
-                document.getElementById('map'), {zoom: 4, center: uluru});
-        // The marker, positioned at Uluru
-        var marker = new google.maps.Marker({position: uluru, map: map});
-    }
-</script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key={{ googleApiKey }}&callback=initMap">
-</script>
+
+
 
 </body>
 </html>

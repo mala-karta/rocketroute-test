@@ -3,10 +3,8 @@
  * User: irene
  * Date: 08.08.2018
  */
-define ('BASE_PATH', __DIR__ . '/..');
-define ('WWW_PATH', __DIR__ );
 
-
+require  './defines.php';
 require WWW_PATH . '/system.php';
 require BASE_PATH . '/config.php';
 require BASE_PATH . '/vendor/autoload.php';
@@ -15,7 +13,14 @@ require BASE_PATH . '/vendor/autoload.php';
 $loader = new Twig_Loader_Filesystem(BASE_PATH . '/templates');
 $twig = new Twig_Environment($loader);
 
-echo $twig->render('index.html', array('googleApiKey' => $Config->getGoogleApiKey()));
+echo $twig->render(
+    'index.html',
+    [
+        'BASE_URL'     => BASE_URL,
+        'googleApiKey' => $Config->getGoogleApiKey(),
+        'markerImage'  => BASE_URL . '/images/warning-icon-th.png',
+    ]
+);
 
 die();
 $client = new \GuzzleHttp\Client();
