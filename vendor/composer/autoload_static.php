@@ -24,6 +24,10 @@ class ComposerStaticInit31e7f042dbeac8e674500a6a20b65d01
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
         ),
+        'R' => 
+        array (
+            'RRTest\\' => 7,
+        ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
@@ -48,6 +52,10 @@ class ComposerStaticInit31e7f042dbeac8e674500a6a20b65d01
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'RRTest\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rrtest',
         ),
         'Psr\\Http\\Message\\' => 
         array (

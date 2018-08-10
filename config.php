@@ -4,10 +4,14 @@
  * Date: 08.08.2018
  */
 
+namespace Internal;
+
 //todo: move from this class
 define('PRODUCTION_MODE', 'prod');
 define('DEVELOPER_MODE', 'dev');
 define('APP_MODE', DEVELOPER_MODE);
+
+
 
 class Config
 {
@@ -25,8 +29,12 @@ class Config
 
     /** @var null|string  */
     protected $_rocketAppKey = null;
+
     /** @var null|DateTime */
     protected $_rocketAppKeyExpDate = null;
+
+    /** @var string  */
+    protected $_rocketWSDL = '';
 
     /** @var string  */
     protected $_googleApiKey = '';
@@ -44,7 +52,7 @@ class Config
 
     /** @var array - fields that MUST be read from config file */
     protected $_requiredCnfFields = [
-        'rocketLogin', 'rocketPassword', 'rocketAppMd5', 'rocketAccessKeyUrl',
+        'rocketLogin', 'rocketPassword', 'rocketAppMd5', 'rocketAccessKeyUrl', 'rocketWSDL',
         'googleApiKey'
     ];
 
@@ -124,7 +132,13 @@ class Config
         return $this->_rocketAccessKeyUrl;
     }
 
-
+    /**
+     * @return string
+     */
+    public function getRocketWSDL()
+    {
+        return $this->_rocketWSDL;
+    }
 
 }
 
