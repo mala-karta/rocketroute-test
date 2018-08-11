@@ -18,6 +18,10 @@ class RRConnector
     const SUCCESS_RESPONSE_MSG = 'SUCCESS';
     const APP_KEY_LIFETIME_HOURS = '5';
 
+    const ERROR_OBTAINING_APP_KEY = 'Error obtaining application access key';
+    const ERROR_RESPONSE_APP_KEY_EMPTY = 'Application access key is empty';
+    const ERROR_OBTAINING_RESPONSE = 'Can not obtain response from Rocket Route for NOTAM info';
+
     /**
      * @var string - file for storing app key and its expiration date
      *               file format - two lines, 1st line - app key, 2nd line - ap key expiration date
@@ -68,15 +72,7 @@ class RRConnector
         if ($this->_isAppKeyAvailable()) {
             return $this;
         }
-
-
-        try  {
-            $this->_requestAppKey();
-        } catch(Exception $e) {
-
-        }
-
-
+        $this->_requestAppKey();
         return $this;
     }
 
@@ -164,14 +160,14 @@ class RRConnector
 
         $xmlTextResponse = $response->getBody()->getContents();
 
-//check if success
+        //check if success
         $simpleXmlResponse = new SimpleXMLElement($xmlTextResponse);
 
         if (!isset($simpleXmlResponse->RESULT[0])
             || self::SUCCESS_RESPONSE_MSG != (string)$simpleXmlResponse->RESULT[0]) {
             $msg = isset ($simpleXmlResponse->MESSAGES[0]->MSG[0])
                  ? (string) $simpleXmlResponse->MESSAGES[0]->MSG[0]
-                 : 'Error obtaining application access key';
+                 : self::ERROR_OBTAINING_APP_KEY;
             throw new Exception($msg);
         }
 
@@ -180,7 +176,7 @@ class RRConnector
                 : null;
 
         if (!$appKey) {
-            throw new Exception('Application access key is empty');
+            throw new Exception(self::ERROR_RESPONSE_APP_KEY_EMPTY);
         }
 
         $date = new DateTime();
@@ -218,12 +214,12 @@ class RRConnector
      * get NOTAM from SOAP request by known ICAO
      *
      * @param $icao
+     * @return array
+     * @throws Exception
      */
     public function getNotam($icao)
     {
         $client = new SoapClient($this->getConfig()->getRocketWSDL());
-        $fu = $client->__getFunctions();
-        $request = '';
 
         $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><REQWX></REQWX>');
 
@@ -237,15 +233,27 @@ class RRConnector
 
         $request = $xml->asXML();
 
-        try {
-            $response = $client->getNotam($request);
-            vdie($response);
-            'https://www.aneclecticmind.com/2010/11/13/how-to-extract-gps-coordinates-for-a-google-maps-location/';
-        } catch (Exception $e) {
+        $response = $client->getNotam($request);
+        if (!$response) {
+            throw new Exception(self::ERROR_OBTAINING_RESPONSE);
+        }
+        $simpleXmlResponse = new SimpleXMLElement($response);
 
+        //checking if response has NOTAMSET for continue work
+        if (!$simpleXmlResponse->NOTAMSET) {
+            throw new Exception(self::ERROR_OBTAINING_RESPONSE);
         }
 
+        $notam = [];
 
-        vdie($client->__getFunctions());
+        foreach ($simpleXmlResponse->NOTAMSET->NOTAM as $notamNode) {
+            $item = [
+                'gps' => (string) $notamNode->ItemQ,
+                'msg' => (string) $notamNode->ItemE,
+            ];
+            $notam[] = $item;
+        }
+
+        return $notam;
     }
 }

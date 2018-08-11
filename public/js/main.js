@@ -1,6 +1,10 @@
+var map;
+var markers = [];
+
 function sendRequest() {
 
     hideError();
+    clearMapMarkers();
     var icaoValue = document.getElementById('icao').value;
 
     if (!isValidIcao(icaoValue)) {
@@ -9,23 +13,71 @@ function sendRequest() {
     }
 
     var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            processResponse(this);
+        }
+    };
     xhr.open('POST', '');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.send('icao=' + icaoValue);
-    xhr.onload = function() {
-        /*if (xhr.status === 200 && xhr.responseText !== newName) {
-            alert('Something went wrong.  Name is now ' + xhr.responseText);
-        }
-        else if (xhr.status !== 200) {
-            alert('Request failed.  Returned status of ' + xhr.status);
-        }*/
-    };
+}
 
+function processResponse(xhr) {
 
+    if (!xhr.responseText) {
+        return false;
+    }
 
+    var obj = JSON.parse(xhr.responseText);
+    if ('error' == obj.status) {
+        showError(obj.message);
+    }
 
+    if ('ok' == obj.status) {
+        showNotam(obj.notam);
+        //todo: show notam info on google maps
+    }
 
+}
+
+function clearMapMarkers() {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+}
+
+function showNotam(notam)
+{
+    notam.forEach(function(element){
+        var position = {lat: element.lat, lng: element.lng};
+
+        var icon = {
+         url: "images/warning-icon-th.png", // url
+         scaledSize: new google.maps.Size(25, 25), // scaled size
+         origin: new google.maps.Point(0,0), // origin
+         anchor: new google.maps.Point(0, 0) // anchor
+         };
+
+        var infowindow = new google.maps.InfoWindow({
+            content: element.msg,
+            maxWidth: 200
+        });
+        // The marker, positioned at Uluru
+        var marker = new google.maps.Marker({position: position, map: map, icon: icon });
+        marker.addListener('click', function() {
+            infowindow.open(map, marker);
+        });
+
+        markers.push(marker);
+
+    });
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < markers.length; i++) {
+        bounds.extend(markers[i].getPosition());
+    }
+    map.fitBounds(bounds);
 }
 
 function isValidIcao(icaoValue) {
@@ -52,24 +104,13 @@ function hideError() {
 
 // Initialize and add the map
 function initMap() {
-    // The location of Uluru
-    var uluru = {lat: -25.344, lng: 131.036};
-    // The map, centered at Uluru
-
+    // The map
     var mapOptions = {
         center: new google.maps.LatLng(20, 0),
         zoom: 2
     }
 
-    var map = new google.maps.Map(
+    map = new google.maps.Map(
         document.getElementById('map'), mapOptions  );
 
-    /*var icon = {
-        url: '{{ markerImage }}', // url
-        scaledSize: new google.maps.Size(25, 25), // scaled size
-        origin: new google.maps.Point(0,0), // origin
-        anchor: new google.maps.Point(0, 0) // anchor
-    };*/
-    // The marker, positioned at Uluru
-//        var marker = new google.maps.Marker({position: uluru, map: map, icon: icon });
 }

@@ -7,10 +7,17 @@
 namespace RRTest;
 
 use Internal\Config;
+use Exception;
 
 class Processor
 {
-    const ERR_ICAO_NOT_SET = 'Can not set ICAO';
+    const STATUS_OK = 'ok';
+    const STATUS_ERROR = 'error';
+
+    const ERROR_ICAO_NOT_SET = 'Can not set ICAO';
+    const ERROR_CONNECTOR_ERROR = 'Connection ito RocketRoute is not set';
+
+    const ERROR_NO_NOTAM_INFO = 'Sorry, there is no NOTAM for such ICAO';
 
     /** @var string  */
     protected $_icao = '';
@@ -45,6 +52,8 @@ class Processor
     }
 
     /**
+     * method gets NOTAM info from RocketRoute SOAP by given airport ICAO code
+     *
      * @return string , json, format: [status => ok|error, errorMsg => errorMsg]
      */
     public function process()
@@ -53,21 +62,148 @@ class Processor
         if (!$this->getIcao()) {
             return json_encode([
                 'status'   => 'error',
-                'errorMsg' => self::ERR_ICAO_NOT_SET,
+                'errorMsg' => self::ERROR_ICAO_NOT_SET,
             ]);
         }
 
-        $this->_initConnector();
+        try {
+            $this->_initConnector();
+            $notam = $this->_connector->getNotam($this->getIcao());
+        } catch (Exception $e) {
+            ExceptionHandler::printJsonError($e->getMessage());
+            die();
+        }
 
-        $notam = $this->_connector->getNotam($this->getIcao());
+        if (empty($notam)) {
+            ExceptionHandler::printJsonError(self::ERROR_NO_NOTAM_INFO);
+            die();
+        }
 
-        $a =2;
+        //we have notam info(s) for appropriate ICAO.
+        //we have gps coordinates for each location and we need to calculate coordinates in Projected Coordinate System
+        $this->_prepareNotam($notam);
 
-        vdie($notam);
-
-        return json_encode([
+        echo json_encode([
             'status' => 'ok',
+            'notam'  => $notam,
+        ]);
+        die();
+    }
 
+    /**
+     * add lat, lng for each notam item (lat, lng are needed for google maps)
+     *
+     * @param array $notam
+     * @return $this
+     */
+    protected function _prepareNotam(&$notam)
+    {
+        foreach ($notam as &$item) {
+            $this->_parseNotamItemQ($item['gps']);
+            $coord = $this->_getProjectedCoord($item['gps']);
+            unset($item['gps']);
+
+            $item['lat'] = $coord['lat'];
+            $item['lng'] = $coord['lng'];
+        }
+        return $this;
+    }
+
+    /**
+     * parse NOTAM ItemQ to gps latitude and longitude,
+     * from $itemQ = '5129N00128E' we'll get:
+     * $itemQ = [
+     *      'lat' => [
+     *          's' => 1,  // sign, 1 for north an west
+     *          'd' => 51, // degrees
+     *          'm' => 29, // minutes
+     *      ],
+     *      'lng' => [
+     *          's' => -1, // sign, -1 for south and east
+     *          'd' => 1,  // degrees
+     *          'm' => 28  // minutes
+     *      ]
+     * ]
+     *
+     * @param string $itemQ
+     * @return $this
+     */
+    protected function _parseNotamItemQ(&$itemQ)
+    {
+        $itemQ = explode('/', $itemQ);
+        $itemQ = end($itemQ);
+        $matches = [];
+        preg_match_all('/^(\d{2})(\d{2})([N|S])(\d{3})(\d{2})([W|E])/', $itemQ, $matches);
+        $res = [];
+        $res['lat']['d'] = (int)$matches[1][0];
+        $res['lat']['m'] = (int)$matches[2][0];
+        if ('S' == $matches[3][0]) {
+            $res['lat']['s'] = -1;
+        } else {
+            $res['lat']['s'] = 1;
+        }
+
+        $res['lng']['d'] = (int)$matches[4][0];
+        $res['lng']['m'] = (int)$matches[5][0];
+        if ('E' == $matches[6][0]) {
+            $res['lng']['s'] = -1;
+        } else {
+            $res['lng']['s'] = 1;
+        }
+
+        $itemQ = $res;
+        return $this;
+    }
+
+    /**
+     * @param array $geographicCoord in format:
+     *      [
+     *      'lat' => [
+     *          's' => 1|-1  // sign, -1 for south and east
+     *          'd' => unsigned int,   // degrees for latitude
+     *          'm' => unsigned int, // minutes for latitude
+     *      ],
+     *      'lng' => [
+     *          's' => 1|-1
+     *          'd' => unsigned int,   // degrees for longitude
+     *          'm' => unsigned int  // minutes for longitude
+     *      ]
+     * @return array in format:
+     * [
+     *      'lat' => 'xx.xxx', where x - one digit
+     *      'lng' => 'xxx.xxx', where x - one digit
+     * ]
+     */
+    protected function _getProjectedCoord($geographicCoord)
+    {
+        $lat = $geographicCoord['lat']['d'] + $geographicCoord['lat']['m'] / 60;
+        $lng = $geographicCoord['lng']['d'] + $geographicCoord['lng']['m'] / 60;
+        $res = [];
+
+        $lat *= $geographicCoord['lat']['s'];
+        $lng *= $geographicCoord['lng']['s'];
+
+
+        $res = [
+            'lat' => $lat,
+            'lng' => $lng,
+        ];
+        return $res;
+    }
+
+    protected function _formJsonErrorMsg($message)
+    {
+        return json_encode([
+            'status'  => self::STATUS_ERROR,
+            'message' => $message
+        ]);
+    }
+
+    protected function _formJsonResponse($status, $message)
+    {
+        return json_encode([
+            'status'  => $status,
+            'message' => $message
         ]);
     }
 
