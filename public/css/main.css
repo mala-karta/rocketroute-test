@@ -4,7 +4,12 @@
     background-color: grey;
 }
 
+.gm-style-iw {
+    max-height: 300px !important;
+    overflow: auto !important;
+}
 
+/* bottom collapsible */
 .wrap-collabsible {
     margin-bottom: 1.2rem 0;
 }
@@ -72,4 +77,22 @@ input[type='checkbox'] {
 .collapsible-content .content-inner {
     background: #aadaff;
     padding: .5rem 1rem;
+}
+
+/* icao form */
+#icaoError {
+    color: #dd4444;
+    font-size: 0.8em;
+    display: block;
+    height: 15px;
+}
+
+.icao-form {
+    float: left;
+}
+
+.preloader {
+    float: left;
+    margin-left: 10px;
+    display: none;
 }

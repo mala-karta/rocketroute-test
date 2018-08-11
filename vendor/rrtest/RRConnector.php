@@ -247,8 +247,12 @@ class RRConnector
         $notam = [];
 
         foreach ($simpleXmlResponse->NOTAMSET->NOTAM as $notamNode) {
+            //todo: itemQ, itemE
+            $itemQ = (string) $notamNode->ItemQ;
+            $itemQ = explode('/', $itemQ);
+            $itemQ = end($itemQ);
             $item = [
-                'gps' => (string) $notamNode->ItemQ,
+                'gps' => $itemQ,
                 'msg' => (string) $notamNode->ItemE,
             ];
             $notam[] = $item;

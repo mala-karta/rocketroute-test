@@ -98,14 +98,32 @@ class Processor
      */
     protected function _prepareNotam(&$notam)
     {
+        $parsed = [];
         foreach ($notam as &$item) {
-            $this->_parseNotamItemQ($item['gps']);
-            $coord = $this->_getProjectedCoord($item['gps']);
-            unset($item['gps']);
+            $gps = $item['gps'];
 
-            $item['lat'] = $coord['lat'];
-            $item['lng'] = $coord['lng'];
+            if (!isset($parsed[$gps])) {
+
+                $this->_parseNotamItemQ($item['gps']);
+                $coord = $this->_getProjectedCoord($item['gps']);
+
+                $item['lat'] = $coord['lat'];
+                $item['lng'] = $coord['lng'];
+
+                $parsed[$gps] = [
+                    'msg' => $item['msg'],
+                    'lat' => $item['lat'],
+                    'lng' => $item['lng'],
+                ];
+            } else {
+                //if notam with the sae coordinates exists
+                $parsed[$gps]['msg'] .= PHP_EOL . $item['msg'];
+            }
         }
+
+        $parsed = array_values($parsed);
+
+        $notam = $parsed;
         return $this;
     }
 
@@ -130,8 +148,6 @@ class Processor
      */
     protected function _parseNotamItemQ(&$itemQ)
     {
-        $itemQ = explode('/', $itemQ);
-        $itemQ = end($itemQ);
         $matches = [];
         preg_match_all('/^(\d{2})(\d{2})([N|S])(\d{3})(\d{2})([W|E])/', $itemQ, $matches);
         $res = [];
@@ -146,9 +162,9 @@ class Processor
         $res['lng']['d'] = (int)$matches[4][0];
         $res['lng']['m'] = (int)$matches[5][0];
         if ('E' == $matches[6][0]) {
-            $res['lng']['s'] = -1;
-        } else {
             $res['lng']['s'] = 1;
+        } else {
+            $res['lng']['s'] = -1;
         }
 
         $itemQ = $res;
@@ -191,6 +207,10 @@ class Processor
         return $res;
     }
 
+    /**
+     * @param string $message
+     * @return string
+     */
     protected function _formJsonErrorMsg($message)
     {
         return json_encode([
@@ -199,6 +219,11 @@ class Processor
         ]);
     }
 
+    /**
+     * @param string $status  - [ok|error]
+     * @param string $message
+     * @return string
+     */
     protected function _formJsonResponse($status, $message)
     {
         return json_encode([
@@ -207,14 +232,21 @@ class Processor
         ]);
     }
 
+    /**
+     * @return $this
+     */
     protected function _initConnector()
     {
         $this->_connector = new RRConnector($this->getConfig());
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     protected function _initIcao()
     {
+        //todo: return error
         if (!isset($_POST['icao'])) {
             return $this;
         }

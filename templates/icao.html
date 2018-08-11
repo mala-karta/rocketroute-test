@@ -1,5 +1,13 @@
-<form>
-    <input type="text" maxlength="4" name="icao" id="icao" placeholder="ICAO code">
-    <input type="button" name="send" value="Search NOTAM" onclick="sendRequest()    ">
-    <div style="color: #dd4444; font-size: 0.8em; display: block; height: 15px;" id="icaoError"></div>
-</form>
+<div class="icao-form">
+    <form>
+        <input type="text" maxlength="4" name="icao" id="icao" placeholder="ICAO code">
+        <input type="button" name="send" value="Search NOTAM" onclick="sendRequest()    ">
+        <div id="icaoError"></div>
+    </form>
+</div>
+<div class="preloader" id="preloader">
+    <img src="{{BASE_URL}}/images/ajax-loader2.gif" >
+</div>
+<div style="clear: both;">
+
+</div>

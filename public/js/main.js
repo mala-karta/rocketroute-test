@@ -12,10 +12,13 @@ function sendRequest() {
         return false;
     }
 
+    showPreloader();
+
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             processResponse(this);
+            hidePreloader();
         }
     };
     xhr.open('POST', '');
@@ -37,7 +40,6 @@ function processResponse(xhr) {
 
     if ('ok' == obj.status) {
         showNotam(obj.notam);
-        //todo: show notam info on google maps
     }
 
 }
@@ -78,6 +80,7 @@ function showNotam(notam)
         bounds.extend(markers[i].getPosition());
     }
     map.fitBounds(bounds);
+
 }
 
 function isValidIcao(icaoValue) {
@@ -113,4 +116,12 @@ function initMap() {
     map = new google.maps.Map(
         document.getElementById('map'), mapOptions  );
 
+}
+
+function showPreloader() {
+    document.getElementById('preloader').style.display = 'block';
+}
+
+function hidePreloader() {
+    document.getElementById('preloader').style.display = 'none';
 }
