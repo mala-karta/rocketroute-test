@@ -151,6 +151,7 @@ class Processor
         $matches = [];
         preg_match_all('/^(\d{2})(\d{2})([N|S])(\d{3})(\d{2})([W|E])/', $itemQ, $matches);
         $res = [];
+
         $res['lat']['d'] = (int)$matches[1][0];
         $res['lat']['m'] = (int)$matches[2][0];
         if ('S' == $matches[3][0]) {
@@ -166,6 +167,7 @@ class Processor
         } else {
             $res['lng']['s'] = -1;
         }
+
 
         $itemQ = $res;
         return $this;
