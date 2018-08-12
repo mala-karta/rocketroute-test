@@ -118,6 +118,14 @@ function initMap() {
 
 }
 
+function checkKey(event) {
+    //On 'Enter' - do not submit form, do not reload page - just send request and continue working
+    if (13 == event.keyCode ) {
+        sendRequest();
+        return false;
+    }
+}
+
 function showPreloader() {
     document.getElementById('preloader').style.display = 'block';
 }

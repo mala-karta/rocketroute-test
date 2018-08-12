@@ -116,8 +116,8 @@ class Processor
                     'lng' => $item['lng'],
                 ];
             } else {
-                //if notam with the sae coordinates exists
-                $parsed[$gps]['msg'] .= PHP_EOL . $item['msg'];
+                //if notam with the same coordinates exists
+                $parsed[$gps]['msg'] .= '<br><br>' . $item['msg'];
             }
         }
 

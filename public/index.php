@@ -4,15 +4,14 @@
  * Date: 08.08.2018
  */
 
-require  './defines.php';
-require WWW_PATH . '/system.php';
+require './../defines.php';
+require BASE_PATH . '/system.php';
 require BASE_PATH . '/config.php';
 require BASE_PATH . '/vendor/autoload.php';
 
 use RRTest\Processor;
 
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH']) {
-    //todo: process ajax
     $processor = new Processor($Config);
     $processor->process();
     die();
@@ -26,6 +25,5 @@ echo $twig->render(
     [
         'BASE_URL'     => BASE_URL,
         'googleApiKey' => $Config->getGoogleApiKey(),
-        'markerImage'  => BASE_URL . '/images/warning-icon-th.png',
     ]
 );

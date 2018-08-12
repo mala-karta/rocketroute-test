@@ -1,6 +1,6 @@
 <div class="icao-form">
     <form>
-        <input type="text" maxlength="4" name="icao" id="icao" placeholder="ICAO code">
+        <input type="text" maxlength="4" name="icao" id="icao" placeholder="ICAO code" onkeypress="return checkKey(event)">
         <input type="button" name="send" value="Search NOTAM" onclick="sendRequest()    ">
         <div id="icaoError"></div>
     </form>
