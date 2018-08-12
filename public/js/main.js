@@ -75,6 +75,7 @@ function showNotam(notam)
         markers.push(marker);
 
     });
+    
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
         bounds.extend(markers[i].getPosition());
@@ -109,8 +110,8 @@ function hideError() {
 function initMap() {
     // The map
     var mapOptions = {
-        center: new google.maps.LatLng(20, 0),
-        zoom: 2
+        center: new google.maps.LatLng(49.7015981,25.7306198),
+        zoom: 4.7
     }
 
     map = new google.maps.Map(
