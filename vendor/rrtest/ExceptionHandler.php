@@ -13,6 +13,8 @@ class ExceptionHandler
     const ERROR_STATUS = 'error';
 
     /**
+     * display error in json
+     *
      * @param $message
      */
     public static function printJsonError($message)
@@ -21,5 +23,16 @@ class ExceptionHandler
             'status'  => self::ERROR_STATUS,
             'message' => $message,
         ]);
+    }
+
+    /**
+     * display error in json and die
+     *
+     * @param $message
+     */
+    public static function dieJsonError($message)
+    {
+        self::printJsonError($message);
+        die();
     }
 }

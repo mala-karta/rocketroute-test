@@ -6,7 +6,6 @@
 
 namespace Internal;
 
-//todo: move from this class
 define('PRODUCTION_MODE', 'prod');
 define('DEVELOPER_MODE', 'dev');
 define('APP_MODE', DEVELOPER_MODE);

@@ -2,22 +2,12 @@
 <html>
 <head>
     <title>Iryna Popovych - Test task for Rocket Route</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{BASE_URL}}/css/main.css">
     <script src="{{BASE_URL}}/js/main.js"></script>
 </head>
 <body>
-<div >
-    <div style="float: left"><h2>Test task for Rocket Route.</h2></div>
-    <div style="float: right; font-size: smaller;">
-        <i style="display:flex; align-items:center; height: 70px;">
-        Please, contact&nbsp;
-            <a href="mailto:iryna.popovych252@gmail.com?subject=RocketRoute Test Task">iryna.popovych252@gmail.com</a>
-        if any questions
-        </i>
-    </div>
-    <div style="clear: both"></div>
-</div>
-
+{% include 'header.html' %}
 
 {% include 'icao.html' %}
 {% include 'maps.html' %}

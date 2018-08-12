@@ -122,12 +122,20 @@ class RRConnector
     }
 
     /**
+     * generates and stores deviceId for desktop
+     *
      * @return string
      */
     protected function _getDeviceId()
     {
-        //todo
-        return 'e138231a68ad82f054e3d756c6634ba1';
+        if (!empty($_COOKIE['forDeviceId'])) {
+            $forDeviceId = $_COOKIE['forDeviceId'];
+        } else {
+            $forDeviceId = random_int(PHP_INT_MIN, PHP_INT_MAX);
+            setcookie('forDeviceId', $forDeviceId);
+        }
+        $a = md5($forDeviceId . $_SERVER['HTTP_USER_AGENT']);
+        return md5($forDeviceId . $_SERVER['HTTP_USER_AGENT']);
     }
 
     /**
@@ -249,7 +257,8 @@ class RRConnector
         foreach ($simpleXmlResponse->NOTAMSET->NOTAM as $notamNode) {
             $itemQ = (string) $notamNode->ItemQ;
             $itemQ = explode('/', $itemQ);
-            $itemQ = end($itemQ);
+            // gps coordinates are at 8th position (official NOTAM say that my be 9th position - with the radius)
+            $itemQ = isset($itemQ[7]) ? $itemQ[7] : null;
             $item = [
                 'gps' => $itemQ,
                 'msg' => (string) $notamNode->ItemE,

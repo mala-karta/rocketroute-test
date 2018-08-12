@@ -14,6 +14,8 @@ class Processor
     const STATUS_OK = 'ok';
     const STATUS_ERROR = 'error';
 
+    const ERROR_ICAO_EMPTY = 'ICAO can not be empty. ICAO code must consists of 4 letters';
+    const ERROR_ICAO_WRONG_FORMAT = 'Please enter valid ICAO code. ICAO code must consists of 4 letters';
     const ERROR_ICAO_NOT_SET = 'Can not set ICAO';
     const ERROR_CONNECTOR_ERROR = 'Connection ito RocketRoute is not set';
 
@@ -70,13 +72,11 @@ class Processor
             $this->_initConnector();
             $notam = $this->_connector->getNotam($this->getIcao());
         } catch (Exception $e) {
-            ExceptionHandler::printJsonError($e->getMessage());
-            die();
+            ExceptionHandler::dieJsonError($e->getMessage());
         }
 
         if (empty($notam)) {
-            ExceptionHandler::printJsonError(self::ERROR_NO_NOTAM_INFO);
-            die();
+            ExceptionHandler::dieJsonError(self::ERROR_NO_NOTAM_INFO);
         }
 
         //we have notam info(s) for appropriate ICAO.
@@ -100,12 +100,24 @@ class Processor
     {
         $parsed = [];
         foreach ($notam as &$item) {
+            if (!$item['gps']) {
+                continue;
+            }
             $gps = $item['gps'];
 
             if (!isset($parsed[$gps])) {
 
                 $this->_parseNotamItemQ($item['gps']);
+                if (!$item['gps']) {
+                    continue;
+                }
+
                 $coord = $this->_getProjectedCoord($item['gps']);
+
+                if (!$coord) {
+                    continue;
+                }
+
 
                 $item['lat'] = $coord['lat'];
                 $item['lng'] = $coord['lng'];
@@ -151,6 +163,9 @@ class Processor
         $matches = [];
         preg_match_all('/^(\d{2})(\d{2})([N|S])(\d{3})(\d{2})([W|E])/', $itemQ, $matches);
         $res = [];
+        if (!isset($matches[1][0])) {
+            $itemQ = null;
+        }
 
         $res['lat']['d'] = (int)$matches[1][0];
         $res['lat']['m'] = (int)$matches[2][0];
@@ -194,9 +209,16 @@ class Processor
      */
     protected function _getProjectedCoord($geographicCoord)
     {
+        foreach (['lat', 'lng'] as $coord) {
+            foreach (['d', 'm', 's'] as $position) {
+                if (!isset($geographicCoord[$coord][$position])) {
+                    return [];
+                }
+            }
+        }
+
         $lat = $geographicCoord['lat']['d'] + $geographicCoord['lat']['m'] / 60;
         $lng = $geographicCoord['lng']['d'] + $geographicCoord['lng']['m'] / 60;
-        $res = [];
 
         $lat *= $geographicCoord['lat']['s'];
         $lng *= $geographicCoord['lng']['s'];
@@ -248,12 +270,13 @@ class Processor
      */
     protected function _initIcao()
     {
-        //todo: return error
-        if (!isset($_POST['icao'])) {
+        if (empty($_POST['icao'])) {
+            ExceptionHandler::dieJsonError(self::ERROR_ICAO_EMPTY);
             return $this;
         }
         $icao = $_POST['icao'];
         if (1 !== preg_match('/^[A-Z]{4}$/i', $icao)) {
+            ExceptionHandler::dieJsonError(self::ERROR_ICAO_WRONG_FORMAT);
             return $this;
         }
         $this->setIcao($icao);
