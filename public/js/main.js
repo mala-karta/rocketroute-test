@@ -80,6 +80,7 @@ function showNotam(notam)
     for (var i = 0; i < markers.length; i++) {
         bounds.extend(markers[i].getPosition());
     }
+
     map.fitBounds(bounds);
 
 }
@@ -111,7 +112,8 @@ function initMap() {
     // The map
     var mapOptions = {
         center: new google.maps.LatLng(49.7015981,25.7306198),
-        zoom: 4.7
+        zoom: 4.7,
+        maxZoom: 15
     }
 
     map = new google.maps.Map(
