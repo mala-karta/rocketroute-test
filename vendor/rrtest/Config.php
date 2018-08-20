@@ -4,7 +4,7 @@
  * Date: 08.08.2018
  */
 
-namespace Internal;
+namespace RRTest;
 
 class Config
 {
@@ -60,7 +60,7 @@ class Config
             $fileName = self::DEVELOPER_MODE_CNF_FILE;
         }
 
-        $fileName = __DIR__ . '/' . $fileName;
+        $fileName = BASE_PATH . '/' . $fileName;
 
         $this->_initFromFile($fileName);
         return $this;
@@ -134,5 +134,3 @@ class Config
     }
 
 }
-
-$Config = new Config();

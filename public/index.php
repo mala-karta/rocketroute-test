@@ -6,14 +6,16 @@
 
 require './../defines.php';
 require BASE_PATH . '/system.php';
-require BASE_PATH . '/config.php';
 require BASE_PATH . '/vendor/autoload.php';
+//require BASE_PATH . '/config.php';
 
+use RRTest\Config;
 use RRTest\Processor;
-//error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+
+$config = new Config();
 
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH']) {
-    $processor = new Processor($Config);
+    $processor = new Processor($config);
     $processor->process();
     die();
 }
@@ -25,6 +27,6 @@ echo $twig->render(
     'index.html',
     [
         'BASE_URL'     => BASE_URL,
-        'googleApiKey' => $Config->getGoogleApiKey(),
+        'googleApiKey' => $config->getGoogleApiKey(),
     ]
 );

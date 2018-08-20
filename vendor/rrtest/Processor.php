@@ -6,7 +6,6 @@
 
 namespace RRTest;
 
-use Internal\Config;
 use Exception;
 
 class Processor
@@ -30,7 +29,10 @@ class Processor
     /** @var Config  */
     protected $_config;
 
-
+    /**
+     * Processor constructor.
+     * @param Config $config
+     */
     public function __construct(Config $config)
     {
         $this->setConfig($config);

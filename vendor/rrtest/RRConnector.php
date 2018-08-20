@@ -9,7 +9,6 @@ namespace RRTest;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use SimpleXMLElement;
-use Internal\Config;
 use DateTime;
 use SoapClient;
 
@@ -36,6 +35,7 @@ class RRConnector
 
     /**
      * RRConnector constructor.
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
