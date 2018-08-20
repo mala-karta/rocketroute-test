@@ -10,7 +10,7 @@ require BASE_PATH . '/config.php';
 require BASE_PATH . '/vendor/autoload.php';
 
 use RRTest\Processor;
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+//error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH']) {
     $processor = new Processor($Config);

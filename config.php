@@ -6,10 +6,6 @@
 
 namespace Internal;
 
-define('PRODUCTION_MODE', 'prod');
-define('DEVELOPER_MODE', 'dev');
-define('APP_MODE', DEVELOPER_MODE);
-
 class Config
 {
     /** @var string  */
