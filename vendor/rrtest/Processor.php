@@ -95,6 +95,19 @@ class Processor
     /**
      * add lat, lng for each notam item (lat, lng are needed for google maps)
      *
+     *   $notam, input format:
+     *                  [
+     *                      ['gps' => string, 'msg' => string],
+     *                      ['gps' => '5021N03054E' , 'msg' => 'some notam msg'],
+     *                      .....
+     *                  ]
+     *                     format after processing:
+     *                  [
+     *                      ['msg' => string, 'lat' => 'xx.xxx', 'lng' => 'xxx.xxx' ],
+     *                      ['msg' => 'some notam msg' , 'lat' => '50.350', 'lng' => '030.90'],
+     *                      .....
+     *                  ]
+     *
      * @param array $notam
      * @return $this
      */

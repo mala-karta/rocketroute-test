@@ -8,6 +8,9 @@ namespace RRTest;
 
 class Config
 {
+    const DEVELOPER_MODE_CNF_FILE = '.cnf-dev';
+    const PRODUCTION_MODE_CNF_FILE = '.cnf-prod';
+
     /** @var string  */
     protected $_rocketLogin = '';
 
@@ -31,17 +34,6 @@ class Config
 
     /** @var string  */
     protected $_googleApiKey = '';
-
-    /**
-     * @return string
-     */
-    public function getGoogleApiKey()
-    {
-        return $this->_googleApiKey;
-    }
-
-    const DEVELOPER_MODE_CNF_FILE = '.cnf-dev';
-    const PRODUCTION_MODE_CNF_FILE = '.cnf-prod';
 
     /** @var array - fields that MUST be read from config file */
     protected $_requiredCnfFields = [
@@ -91,6 +83,14 @@ class Config
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleApiKey()
+    {
+        return $this->_googleApiKey;
     }
 
     /**

@@ -7,7 +7,6 @@
 require './../defines.php';
 require BASE_PATH . '/system.php';
 require BASE_PATH . '/vendor/autoload.php';
-//require BASE_PATH . '/config.php';
 
 use RRTest\Config;
 use RRTest\Processor;

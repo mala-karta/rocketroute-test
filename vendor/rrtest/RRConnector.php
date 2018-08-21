@@ -105,7 +105,7 @@ class RRConnector
      * @param SimpleXMLElement $xml
      * @return $this
      */
-    public function arrayToXml($data, SimpleXMLElement &$xml)
+    protected function _arrayToXml($data, SimpleXMLElement &$xml)
     {
         foreach( $data as $key => $value ) {
             if( is_numeric($key) ){
@@ -113,9 +113,9 @@ class RRConnector
             }
             if( is_array($value) ) {
                 $subnode = $xml->addChild($key);
-                $this->arrayToXml($value, $subnode);
+                $this->_arrayToXml($value, $subnode);
             } else {
-                $xml->addChild("$key",htmlspecialchars("$value"));
+                $xml->addChild("$key", htmlspecialchars("$value"));
             }
         }
         return $this;
@@ -134,7 +134,6 @@ class RRConnector
             $forDeviceId = random_int(PHP_INT_MIN, PHP_INT_MAX);
             setcookie('forDeviceId', $forDeviceId);
         }
-        $a = md5($forDeviceId . $_SERVER['HTTP_USER_AGENT']);
         return md5($forDeviceId . $_SERVER['HTTP_USER_AGENT']);
     }
 
@@ -156,9 +155,8 @@ class RRConnector
             'DEVICEID'  => $this->_getDeviceId(),
             'PCATEGORY' => 'RocketRoute',
             'APPMD5'    => $this->getConfig()->getRocketAppMd5(),
-
         ];
-        $this->arrayToXml($params, $xml);
+        $this->_arrayToXml($params, $xml);
 
         $options = [
             'form_params' => ['req' => $xml->asXML()],
@@ -222,7 +220,12 @@ class RRConnector
      * get NOTAM from SOAP request by known ICAO
      *
      * @param $icao
-     * @return array
+     * @return array , arrays of notam , format:
+     *                  [
+     *                      ['gps' => string, 'msg' => string],
+     *                      ['gps' => '5021N03054E' , 'msg' => 'some notam msg'],
+     *                      .....
+     *                  ]
      * @throws Exception
      */
     public function getNotam($icao)
@@ -237,7 +240,7 @@ class RRConnector
             'ICAO'   => $icao,
 
         ];
-        $this->arrayToXml($params, $xml);
+        $this->_arrayToXml($params, $xml);
 
         $request = $xml->asXML();
 
