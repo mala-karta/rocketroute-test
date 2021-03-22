@@ -1,33 +1,43 @@
 {
-    "name": "psr/http-message",
-    "description": "Common interface for HTTP messages",
+    "name": "symfony/polyfill-ctype",
+    "type": "library",
+    "description": "Symfony polyfill for ctype functions",
     "keywords": [
-        "psr",
-        "psr-7",
-        "http",
-        "http-message",
-        "request",
-        "response"
+        "polyfill",
+        "compatibility",
+        "portable",
+        "ctype"
     ],
-    "homepage": "https://github.com/php-fig/http-message",
+    "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
         {
-            "name": "PHP-FIG",
-            "homepage": "http://www.php-fig.org/"
+            "name": "Gert de Pagter",
+            "email": "BackEndTea@gmail.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.3"
     },
     "autoload": {
         "psr-4": {
-            "Psr\\Http\\Message\\": "src/"
-        }
+            "Symfony\\Polyfill\\Ctype\\": ""
+        },
+        "files": [
+            "bootstrap.php"
+        ]
     },
+    "suggest": {
+        "ext-ctype": "For best performance"
+    },
+    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "1.9-dev"
         }
     }
 }
